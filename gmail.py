@@ -12,22 +12,24 @@ PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
 
 @dataclass
 class Email:
+    from_: str
     to: str
     subject: str
     body: str
 
     def __str__(self):
-        return f'To: {self.to}\nSubject: {self.subject}\n\n{self.body}'
+        return f'From: {self.from_}\nTo: {self.to}\nSubject: {self.subject}\n\n{self.body}'
 
 
-def send_email(to: str, subject: str, body: str):
+def send_email(to: str | list[str], subject: str, body: str):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as connection:
         connection.login(
             user=EMAIL,
             password=PASSWORD,
         )
-        connection.sendmail(
-            from_addr=EMAIL,
-            to_addrs=to,
-            msg=str(Email(to=to, subject=subject, body=body)).encode('utf-8'),
-        )
+        for email_address in to if isinstance(to, list) else [to]:
+            connection.sendmail(
+                from_addr=EMAIL,
+                to_addrs=email_address,
+                msg=str(Email(from_=f'Zack Plauché <{EMAIL}>', to=email_address, subject=subject, body=body)).encode('utf-8'),
+            )

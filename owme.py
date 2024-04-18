@@ -12,7 +12,7 @@ class Apartment(BaseModel):
     price: Decimal | None = None
 
     def __str__(self) -> str:
-        return f'{self.address} Studio {self.number} - {self.price}: {self.url}'
+        return f'{self.address} Studio {self.number} -  €{self.price}: {self.url}'
 
 
 BASE_URL = 'https://www.owme.pt'
