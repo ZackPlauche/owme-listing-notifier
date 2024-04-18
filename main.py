@@ -1,7 +1,6 @@
 import os
 from typing import Callable
 
-import schedule
 from dotenv import load_dotenv
 
 import owme
@@ -34,14 +33,5 @@ def notify_about_new_apartments(email: str, filter_func: Callable | None = None)
         gmail.send_email(email, subject='New Apartments on OWME 💌', body=message)
 
 
-schedule.every().day.at('06:00').do(
-    notify_about_new_apartments,
-    LUIZA_EMAIL,
-    lambda listing: listing.price < 400
-)
-
-
 if __name__ == '__main__':
     notify_about_new_apartments(LUIZA_EMAIL)
-    while True:
-        schedule.run_pending()
