@@ -17,6 +17,8 @@ quality_words = ['good', 'great', 'awesome', 'epic', 'fantastic', 'spectacular']
 LUIZA_MESSAGE = f"""\
 Hey {random.choice(pet_names)}! 🙂 Hope you're having a {random.choice(quality_words)} day today {random.choice(flowers)}
 
+(Note: This is an automated email, but automated with love (^-^)<3)
+
 Here are some new apartments on the OWME website that you might like in your price range:
 """
 
