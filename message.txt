@@ -1,0 +1,5 @@
+Hey {name}! 🙂 Hope you're having a {quality} day today {emoji}
+
+(Note: This is an automated email, but automated with love (^-^)<3)
+
+Here are some new apartments on the OWME website that you might like in your price range:

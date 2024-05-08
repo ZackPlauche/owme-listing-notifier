@@ -2,3 +2,5 @@
 *.pyc
 virtualenv/
 Pipfile
+*.db
+*.sqlite*
