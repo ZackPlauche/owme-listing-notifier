@@ -4,11 +4,7 @@ bs4==0.0.2
 certifi==2024.2.2
 charset-normalizer==3.3.2
 colorama==0.4.6
-<<<<<<< HEAD
 greenlet==3.0.3
-=======
-exceptiongroup==1.2.1
->>>>>>> 9fe2aca38d1d714f6876dc86012237fa296a02f0
 idna==3.7
 iniconfig==2.0.0
 MouseInfo==0.1.3
@@ -24,18 +20,11 @@ PyRect==0.2.0
 PyScreeze==0.1.30
 pytest==8.1.1
 python-dotenv==1.0.1
-<<<<<<< HEAD
 python-gmail @ git+https://github.com/zackplauche/python-gmail@3e2c4f5e04ca572a6e07c54d43e67398ab45b438
 pytweening==1.2.0
 requests==2.31.0
 schedule==1.2.1
 soupsieve==2.5
 SQLAlchemy==2.0.30
-=======
-requests==2.31.0
-schedule==1.2.1
-soupsieve==2.5
-tomli==2.0.1
->>>>>>> 9fe2aca38d1d714f6876dc86012237fa296a02f0
 typing_extensions==4.11.0
 urllib3==2.2.1
