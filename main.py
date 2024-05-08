@@ -28,4 +28,4 @@ body = message.format(
 notifier = OWMENotifier('sqlite:///owme.db')
 
 if __name__ == '__main__':
-    notifier.notify_about_new_apartments(emails, body=body)
+    notifier.notify_about_new_apartments(emails, body=body, filter_func=lambda apt: apt.price < 400)

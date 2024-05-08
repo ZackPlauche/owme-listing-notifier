@@ -92,9 +92,9 @@ class OWMENotifier:
                     print(f'{len(new_apartments)} new apartments found for {email}.')
                     notification = Notification(email=email, subject=subject, body=body, apartments=new_apartments)
                     session.add(notification)
-                    body = body + '\n' + '\n'.join(f'- {apt}' for apt in new_apartments)
+                    message = body + '\n' + '\n'.join(f'- {apt}' for apt in new_apartments)
                     if not no_send:
-                        self.gmail.send_email(email, subject=subject, body=body)
+                        self.gmail.send_email(email, subject=subject, body=message)
                 else:
                     print('No new apartments found.')
             session.commit()
