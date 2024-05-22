@@ -1,1 +1,1 @@
-from .notifier import OWMENotifier
+from .notifier import Notifier

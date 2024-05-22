@@ -25,6 +25,37 @@ URLS = {
 }
 
 
+def get_listings(url: str) -> list[Apartment]:
+    """Get listings from a given OWME url."""
+    response = requests.get(url)
+    return _parse_listings(response.text)
+
+
+def get_all_listings() -> list[Apartment]:
+    """Get all listings from the OWME website."""
+    listings = []
+    offset = 0
+    base_url = URLS['all listings']
+    url = base_url
+    while True:
+        html = requests.get(url).text
+        current_listings = _parse_listings(html)
+        listings += current_listings
+        if 'list-pagination-next' in html:
+            offset += len(current_listings)
+            url = base_url + f'?offset={offset + 1}'
+            continue
+        break
+    return listings
+
+
+def get_available_listings() -> list[Apartment]:
+    """Get new listings from the available listings page."""
+    available_listings = get_listings(URLS['available listings'])
+    available_soon_listings = get_listings(URLS['available soon'])
+    return available_listings + available_soon_listings
+
+
 def _get_studio_cards(html: str) -> list[bs4.element.Tag]:
     """Get studio cards from a given url."""
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -53,34 +84,3 @@ def _parse_studio_card(studio_card: bs4.element.Tag) -> Apartment:
 def _parse_listings(html: str) -> list[Apartment]:
     """Parse listings from a given html."""
     return [_parse_studio_card(studio_card) for studio_card in _get_studio_cards(html)]
-
-
-def get_listings(url: str) -> list[Apartment]:
-    """Get listings from a given url."""
-    response = requests.get(url)
-    return _parse_listings(response.text)
-
-
-def get_all_listings() -> list[Apartment]:
-    """Get all listings from the OWME website."""
-    listings = []
-    offset = 0
-    base_url = URLS['all listings']
-    url = base_url
-    while True:
-        html = requests.get(url).text
-        current_listings = _parse_listings(html)
-        listings += current_listings
-        if 'list-pagination-next' in html:
-            offset += len(current_listings)
-            url = base_url + f'?offset={offset + 1}'
-            continue
-        break
-    return listings
-
-
-def get_available_listings() -> list[Apartment]:
-    """Get new listings from the available listings page."""
-    available_listings = get_listings(URLS['available listings'])
-    available_soon_listings = get_listings(URLS['available soon'])
-    return available_listings + available_soon_listings

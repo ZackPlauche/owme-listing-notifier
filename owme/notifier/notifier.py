@@ -8,10 +8,11 @@ from sqlalchemy import create_engine, or_, and_
 from sqlalchemy.orm import Session, sessionmaker
 
 import owme
+from owme.scraper.models import Apartment as ApartmentSchema
 from owme.notifier.dbmodels import Apartment, Base, Notification
 
 
-class OWMENotifier:
+class Notifier:
 
     def __init__(self, db_uri: str):
         try:
@@ -39,17 +40,23 @@ class OWMENotifier:
             session.commit()
 
     @staticmethod
-    def _get_available_listings(session: Session) -> list[Apartment]:
+    def _get_available_listings(session: Session, available_listings: list[ApartmentSchema]) -> list[Apartment]:
+        """Get the existing apartments from the database."""
+        available_listing_urls = [apt.url for apt in available_listings]
+        existing_apts = session.query(Apartment).filter(
+            or_(Apartment.available == True, Apartment.url.in_(available_listing_urls))
+        ).all()
+        return existing_apts
+
+    @staticmethod
+    def _get_and_update_available_listings(session: Session) -> list[Apartment]:
         """Get and update the avialable listings from the OWME website"""
         available_apartments = []
         available_listings = owme.get_available_listings()
         # Check the database to see if the listings in the database has changed
         if available_listings:
             available_listing_urls = [apt.url for apt in available_listings]
-            existing_apts = session.query(Apartment).filter(
-                Apartment.url.in_(available_listing_urls),
-                or_(Apartment.available == True)
-            ).all()
+            existing_apts = Notifier._get_available_listings(session, available_listings)
             for apt in existing_apts:
                 before_apt_available = apt.available
                 apt.available = apt.url in available_listing_urls
@@ -60,10 +67,10 @@ class OWMENotifier:
             session.commit()
         return available_apartments
 
-    def notify_about_new_apartments(self, 
-                                    email: str | list[str], 
-                                    subject: str = 'New Apartments on OWME 💌', 
-                                    body: str = 'New apartments found!', 
+    def notify_about_new_apartments(self,
+                                    email: str | list[str],
+                                    subject: str = 'New Apartments on OWME 💌',
+                                    body: str = 'New apartments found!',
                                     filter_func: Callable | None = None,
                                     no_send: bool = False,
                                     ):
@@ -71,9 +78,10 @@ class OWMENotifier:
         emails = [email] if isinstance(email, str) else email
         with self.Session() as session:
             # Get available listings that match the preferences of the users
-            apartments = self._get_available_listings(session)
+            apartments = self._get_and_update_available_listings(session)
             if filter_func:
                 apartments: list[Apartment] = [listing for listing in apartments if filter_func(listing)]
+            print(apartments)
             oldest_change = min(apt.last_availability_change for apt in apartments)
             for email in emails:
                 new_apartments = []

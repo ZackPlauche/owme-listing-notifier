@@ -1,0 +1,6 @@
+install-packages=[
+    'pydantic',
+    'requests',
+    'bs4',
+    'sqlalchemy',
+]
