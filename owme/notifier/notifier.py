@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, or_, and_
 from sqlalchemy.orm import Session, sessionmaker
 
 import owme
-from owme.scraper.models import Apartment as ApartmentSchema
+from owme.models import Apartment as ApartmentSchema
 from owme.notifier.dbmodels import Apartment, Base, Notification
 
 
