@@ -43,9 +43,10 @@ class Notifier:
     def _get_available_listings(session: Session, available_listings: list[ApartmentSchema]) -> list[Apartment]:
         """Get the existing apartments from the database."""
         available_listing_urls = [apt.url for apt in available_listings]
-        existing_apts = session.query(Apartment).filter(
-            or_(Apartment.available == True, Apartment.url.in_(available_listing_urls))
-        ).all()
+        existing_apts = session.query(Apartment).filter(or_(
+            Apartment.available == True, 
+            Apartment.url.in_(available_listing_urls)
+        )).all()
         return existing_apts
 
     @staticmethod
@@ -81,28 +82,30 @@ class Notifier:
             apartments = self._get_and_update_available_listings(session)
             if filter_func:
                 apartments: list[Apartment] = [listing for listing in apartments if filter_func(listing)]
-            print(apartments)
-            oldest_change = min(apt.last_availability_change for apt in apartments)
-            for email in emails:
-                new_apartments = []
-                # Get the notifications that have been sent since the latest currently available jobs last availability change
-                notifications = session.query(Notification).filter(
-                    Notification.email == email,
-                    and_(Notification.sent_at >= oldest_change)
-                ).all()
-                if notifications:
-                    for apt in apartments:
-                        if not any(apt in notification.apartments for notification in notifications):
-                            new_apartments.append(apt)
-                else:
-                    new_apartments = apartments
-                if new_apartments:
-                    print(f'{len(new_apartments)} new apartments found for {email}.')
-                    notification = Notification(email=email, subject=subject, body=body, apartments=new_apartments)
-                    session.add(notification)
-                    message = body + '\n' + '\n'.join(f'- {apt}' for apt in new_apartments)
-                    if not no_send:
-                        self.gmail.send_email(email, subject=subject, body=message)
-                else:
-                    print('No new apartments found.')
+            if apartments:
+                oldest_change = min(apt.last_availability_change for apt in apartments)
+                for email in emails:
+                    new_apartments = []
+                    # Get the notifications that have been sent since the latest currently available jobs last availability change
+                    notifications = session.query(Notification).filter(
+                        Notification.email == email,
+                        and_(Notification.sent_at >= oldest_change)
+                    ).all()
+                    if notifications:
+                        for apt in apartments:
+                            if not any(apt in notification.apartments for notification in notifications):
+                                new_apartments.append(apt)
+                    else:
+                        new_apartments = apartments
+                    if new_apartments:
+                        print(f'{len(new_apartments)} new apartments found for {email}.')
+                        notification = Notification(email=email, subject=subject, body=body, apartments=new_apartments)
+                        session.add(notification)
+                        message = body + '\n' + '\n'.join(f'- {apt}' for apt in new_apartments)
+                        if not no_send:
+                            self.gmail.send_email(email, subject=subject, body=message)
+                    else:
+                        print('No new apartments found.')
+            else:
+                print('No new apartments found.')
             session.commit()
