@@ -11,6 +11,8 @@ import owme
 from owme.models import Apartment as ApartmentSchema
 from owme.notifier.dbmodels import Apartment, Base, Notification
 
+logger = logging.getLogger(__name__)
+
 
 class Notifier:
 
@@ -19,13 +21,13 @@ class Notifier:
             global gmail
             self.gmail = gmail.Client.from_env()
         except:
-            feedback = 'OWMENotifier requires GMAIL_USERNAME and GMAIL_PASSWORD environment variables to be set.'
+            feedback = 'owme.Notifier requires GMAIL_USERNAME and GMAIL_PASSWORD environment variables to be set.'
             raise Exception(feedback)
         engine = create_engine(db_uri)
         self.Session = sessionmaker(bind=engine)
         if engine.name == 'sqlite' and not Path(engine.url.database).exists():
             Base.metadata.create_all(engine)
-            self.update_all_listings()
+        self.update_all_listings()
 
     def update_all_listings(self):
         """Update the database with all of owme's listings."""
@@ -44,7 +46,7 @@ class Notifier:
         """Get the existing apartments from the database."""
         available_listing_urls = [apt.url for apt in available_listings]
         existing_apts = session.query(Apartment).filter(or_(
-            Apartment.available == True, 
+            Apartment.available == True,
             Apartment.url.in_(available_listing_urls)
         )).all()
         return existing_apts

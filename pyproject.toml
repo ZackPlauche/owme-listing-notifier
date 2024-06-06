@@ -4,3 +4,23 @@ install-packages=[
     'bs4',
     'sqlalchemy',
 ]
+[tool.poetry]
+name = "owme-listing-notifier"
+version = "0.1.0"
+description = ""
+authors = ["Zack Plauché <zackknowspthon@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+bs4 = "^0.0.2"
+pydantic = "^2.7.3"
+python-dotenv = "^1.0.1"
+python-gmail = {git = "https://github.com/zackplauche/python-gmail", rev = "3e2c4f5e04ca572a6e07c54d43e67398ab45b438"}
+requests = "^2.32.3"
+sqlalchemy = "^2.0.30"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
